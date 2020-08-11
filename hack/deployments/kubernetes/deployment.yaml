@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mystique-demo-golang
+spec:
+  selector:
+    matchLabels:
+      app: mystique-demo-golang
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mystique-demo-golang
+    spec:
+      containers:
+      - name: mystique-demo-golang
+        image: uhub.service.ucloud.cn/devsecops/mystique-demo-golang:latest
+        imagePullPolicy: Always
+
