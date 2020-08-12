@@ -1,3 +1,10 @@
-[kafka]
+[app]
+process = "/opt/app"
+
+[input]
 broker = ["117.50.109.103:9092"]
 topic = "analyzer"
+
+[output]
+broker = ["117.50.109.103:9092"]
+topic = "mystique"

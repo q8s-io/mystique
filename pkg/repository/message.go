@@ -1,14 +1,13 @@
 package repository
 
 import (
-	"github.com/q8s-io/mystique/pkg/entity/model"
 	"github.com/q8s-io/mystique/pkg/infrastructure/kafka"
 )
 
-// func SendMsgJobImageAnalyzer(jobScannerMsg *model.JobScannerMsg) {
-// 	kafka.SyncProducerSendMsg("analyzer", jobScannerMsg)
-// }
+func ProducerMsg(topic string, msg []byte) {
+	kafka.SyncProducerSendMsg(topic, string(msg))
+}
 
-func ConsumerMsg() {
-	go kafka.ConsumerMsg(model.Config.Kafka.Topic)
+func ConsumerMsg(topic string) {
+	go kafka.ConsumerMsg(topic)
 }

@@ -4,7 +4,6 @@ import (
 	"flag"
 	"log"
 
-	"github.com/q8s-io/mystique/pkg/infrastructure/kafka"
 	"github.com/q8s-io/mystique/pkg/provider/process"
 	"github.com/q8s-io/mystique/pkg/provider/sidecar"
 )
@@ -32,7 +31,6 @@ func RunApp(serverType string) {
 }
 
 func RunSidecar() {
-	kafka.InitConsumer()
 	go sidecar.Run()
 	sidecar.Signal()
 }

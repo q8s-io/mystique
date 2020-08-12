@@ -7,7 +7,6 @@ import (
 
 	"github.com/Shopify/sarama"
 
-	"github.com/q8s-io/mystique/pkg/entity/model"
 	"github.com/q8s-io/mystique/pkg/infrastructure/xray"
 )
 
@@ -20,7 +19,7 @@ var clientErr error
 
 var Queue chan []byte
 
-func InitConsumer() {
+func InitConsumer(brokerList []string, groupID string) {
 	config := sarama.NewConfig()
 	config.Version = sarama.V2_1_0_0
 	config.Consumer.Offsets.AutoCommit.Enable = false
@@ -28,9 +27,7 @@ func InitConsumer() {
 	config.Consumer.Offsets.Initial = sarama.OffsetOldest
 	config.Consumer.Group.Rebalance.Strategy = sarama.BalanceStrategyRange
 
-	kafkaConfig := model.Config.Kafka
-
-	Client, clientErr = sarama.NewConsumerGroup(kafkaConfig.BrokerList, "mystique", config)
+	Client, clientErr = sarama.NewConsumerGroup(brokerList, groupID, config)
 	if clientErr != nil {
 		xray.ErrMini(clientErr)
 	}

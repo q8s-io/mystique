@@ -12,8 +12,11 @@ spec:
       labels:
         app: mystique-demo-golang
     spec:
+      shareProcessNamespace: true
       containers:
-      - name: mystique-demo-golang
+      - name: mystique
+        image: uhub.service.ucloud.cn/devsecops/mystique:0972aec
+        imagePullPolicy: Always
+      - name: demo
         image: uhub.service.ucloud.cn/devsecops/mystique-demo-golang:latest
         imagePullPolicy: Always
-

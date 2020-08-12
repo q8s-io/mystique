@@ -7,12 +7,10 @@ import (
 	"os"
 )
 
-var StdinFD = "/proc/4809/fd/0"
-var StdoutFD = "/proc/26507/fd/1"
-var StderrFD = "/proc/26507/fd/2"
+func SinkToStdinFromQueue(pid string) {
+	stdinFD := fmt.Sprintf("/proc/%s/fd/0", pid)
 
-func SinkToStdinFromQueue() {
-	f, openErr := os.OpenFile(StdinFD, os.O_WRONLY|os.O_APPEND, os.ModeAppend)
+	f, openErr := os.OpenFile(stdinFD, os.O_WRONLY|os.O_APPEND, os.ModeAppend)
 	if openErr != nil {
 		fmt.Println(openErr)
 	}
@@ -23,25 +21,34 @@ func SinkToStdinFromQueue() {
 		if writeErr != nil {
 			fmt.Println(writeErr)
 		}
-		log.Printf("write to %d byte", n)
+		log.Printf("write data %d byte to fd.", n)
 		_ = f.Sync()
 	}
 
 	_ = f.Close()
 }
 
-func stdout() {
-	file, _ := os.OpenFile(StdoutFD, os.O_RDWR, os.ModeNamedPipe)
+func SinkToQueueFromStdout(pid string) {
+	stdoutFD := fmt.Sprintf("/proc/%s/fd/1", pid)
+
+	file, _ := os.OpenFile(stdoutFD, os.O_RDWR, os.ModeNamedPipe)
+
 	reader := bufio.NewReader(file)
+
 	for {
 		line, _, _ := reader.ReadLine()
-		fmt.Println("stdout msg", string(line))
+		StdoutQueue <- line
+		log.Printf("read data from fd %s.", string(line))
 	}
 }
 
-func stderr() {
-	file, _ := os.OpenFile(StderrFD, os.O_RDWR, os.ModeNamedPipe)
+func stderr(pid string) {
+	stderrFD := fmt.Sprintf("/proc/%s/fd/0", pid)
+
+	file, _ := os.OpenFile(stderrFD, os.O_RDWR, os.ModeNamedPipe)
+
 	reader := bufio.NewReader(file)
+
 	for {
 		line, _, _ := reader.ReadLine()
 		fmt.Println("stderr msg", string(line))

@@ -37,7 +37,6 @@ GOLANGCI_LINT := $(TOOLS_BIN_DIR)/golangci-lint
 run:
 	GOPROXY=https://goproxy.cn GO111MODULE=on go run app.go -conf "./configs/pro.toml"
 
-
 server:
 	@echo "version: $(VERSION)"
 	docker build --no-cache --build-arg CODEPATH=$(CODEPATH) -t $(REGISTRY)/$(IMAGE):$(VERSION) -f Dockerfile .

@@ -1,29 +1,26 @@
 # build builder
-FROM golang:1.12-alpine as builder
+FROM golang:1.14-alpine as builder
 
 ARG CODEPATH
 
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories \
-	&& apk update \
-	&& apk add git \
-	&& rm -rf /var/cache/apk/*
+RUN apk add git && rm -rf /var/cache/apk/*
 
 WORKDIR $GOPATH/src/$CODEPATH
 
 COPY . .
 
-RUN GO111MODULE=on CGO_ENABLED=0 GOOS=linux GOPROXY=https://mirrors.aliyun.com/goproxy/ go build -o /app/app app.go
+RUN GO111MODULE=on CGO_ENABLED=0 GOOS=linux GOPROXY=https://goproxy.cn go build -o /opt/mystique app.go
 
 # build server
-FROM alpine:3.8
+FROM centos:7.6.1810
 
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
-WORKDIR /app
+WORKDIR /opt
 
-COPY --from=builder /app/app .
+COPY --from=builder /opt/mystique .
 COPY ./configs/ ./configs/
-RUN chmod +x /app/app
+RUN chmod +x /opt/mystique
 
-ENTRYPOINT ["/app/app"]
-CMD ["-conf", "/app/configs/pro.toml"]
+ENTRYPOINT ["/opt/mystique"]
+CMD ["-conf", "/opt/configs/pro.toml"]
