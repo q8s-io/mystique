@@ -26,6 +26,7 @@ func SyncProducerSendMsg(topic string, message string) {
 		Topic: topic,
 		Value: sarama.StringEncoder(message),
 	}
+
 	_, _, err := SyncProducer.SendMessage(msg)
 
 	if err != nil {

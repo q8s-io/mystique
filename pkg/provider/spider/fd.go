@@ -1,4 +1,4 @@
-package sidecar
+package spider
 
 import (
 	"bufio"
@@ -37,8 +37,7 @@ func SinkToQueueFromStdout(pid string) {
 
 	for {
 		line, _, _ := reader.ReadLine()
-		StdoutQueue <- line
-		log.Printf("read data from fd %s.", string(line))
+		go processOutputLine(string(line))
 	}
 }
 
@@ -53,4 +52,9 @@ func stderr(pid string) {
 		line, _, _ := reader.ReadLine()
 		fmt.Println("stderr msg", string(line))
 	}
+}
+
+func processOutputLine(line string) {
+	StdoutQueue <- line
+	log.Printf("read data from fd %s.", string(line))
 }

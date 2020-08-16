@@ -4,11 +4,12 @@ import (
 	"flag"
 	"log"
 
+	"github.com/q8s-io/mystique/pkg/entity/model"
 	"github.com/q8s-io/mystique/pkg/provider/process"
-	"github.com/q8s-io/mystique/pkg/provider/sidecar"
+	"github.com/q8s-io/mystique/pkg/provider/spider"
 )
 
-var confPath = flag.String("conf", "./configs/pro.toml", "The path of config.")
+var confPath = flag.String("conf", "./configs/pro.yaml", "The path of config.")
 
 // 服务类型
 var serverType = flag.String("type", "sidecar", "The type of server.")
@@ -31,6 +32,12 @@ func RunApp(serverType string) {
 }
 
 func RunSidecar() {
-	go sidecar.Run()
-	sidecar.Signal()
+	switch model.Config.App.Type {
+	case "spider":
+		go spider.Run()
+	default:
+		log.Println(model.Config.App.Type)
+	}
+
+	spider.Signal()
 }

@@ -3,21 +3,28 @@ package model
 var Config Runtime
 
 type Runtime struct {
-	App    app
-	Input  input
-	Output output
+	App    App
+	Input  Input
+	Output Output
 }
 
-type app struct {
-	ProcessName string `toml:"process"`
+type App struct {
+	Type           string `yaml:"type"`
+	ProcessorsName string `yaml:"processors_name"`
 }
 
-type input struct {
-	BrokerList []string `toml:"broker"`
-	Topic      string   `toml:"topic"`
+type Input struct {
+	Enable bool  `yaml:"enable"`
+	Kafka  Kafka `yaml:"kafka"`
 }
 
-type output struct {
-	BrokerList []string `toml:"broker"`
-	Topic      string   `toml:"topic"`
+type Output struct {
+	Enable bool  `yaml:"enable"`
+	Kafka  Kafka `yaml:"kafka"`
+}
+
+type Kafka struct {
+	Broker        []string `yaml:"broker"`
+	Topic         string   `yaml:"topic"`
+	ConsumerGroup string   `yaml:"consumer_group"`
 }
