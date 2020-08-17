@@ -22,7 +22,7 @@ var Queue chan []byte
 func InitConsumer(brokerList []string, groupID string) {
 	config := sarama.NewConfig()
 	config.Version = sarama.V2_1_0_0
-	config.Consumer.Offsets.AutoCommit.Enable = false
+	config.Consumer.Offsets.AutoCommit.Enable = true
 	config.Consumer.Offsets.AutoCommit.Interval = 1 * time.Second
 	config.Consumer.Offsets.Initial = sarama.OffsetOldest
 	config.Consumer.Group.Rebalance.Strategy = sarama.BalanceStrategyRange
@@ -32,7 +32,7 @@ func InitConsumer(brokerList []string, groupID string) {
 		xray.ErrMini(clientErr)
 	}
 
-	Queue = make(chan []byte, 1)
+	Queue = make(chan []byte, 0)
 }
 
 func ConsumerMsg(topic string) {
@@ -55,8 +55,12 @@ func ConsumerMsg(topic string) {
 			if ctx.Err() != nil {
 				return
 			}
+			consumer.ready = make(chan bool)
 		}
 	}()
+
+	// Await till the consumer has been set up
+	<-consumer.ready
 
 	wg.Wait()
 

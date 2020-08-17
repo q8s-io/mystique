@@ -21,7 +21,7 @@ func SinkToStdinFromQueue(pid string) {
 		if writeErr != nil {
 			fmt.Println(writeErr)
 		}
-		log.Printf("write data %d byte to fd.", n)
+		log.Printf("write data %d byte to fd succeed.", n)
 		_ = f.Sync()
 	}
 
@@ -41,8 +41,8 @@ func SinkToQueueFromStdout(pid string) {
 	}
 }
 
-func stderr(pid string) {
-	stderrFD := fmt.Sprintf("/proc/%s/fd/0", pid)
+func SinkToQueueFromStderr(pid string) {
+	stderrFD := fmt.Sprintf("/proc/%s/fd/2", pid)
 
 	file, _ := os.OpenFile(stderrFD, os.O_RDWR, os.ModeNamedPipe)
 
@@ -50,11 +50,6 @@ func stderr(pid string) {
 
 	for {
 		line, _, _ := reader.ReadLine()
-		fmt.Println("stderr msg", string(line))
+		go processOutputLine(string(line))
 	}
-}
-
-func processOutputLine(line string) {
-	StdoutQueue <- line
-	log.Printf("read data from fd %s.", string(line))
 }

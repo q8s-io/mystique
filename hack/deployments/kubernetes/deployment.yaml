@@ -15,7 +15,7 @@ spec:
       shareProcessNamespace: true
       containers:
       - name: mystique
-        image: uhub.service.ucloud.cn/devsecops/mystique:0972aec
+        image: uhub.service.ucloud.cn/devsecops/mystique:a9215e8
         imagePullPolicy: Always
       - name: demo
         image: uhub.service.ucloud.cn/devsecops/mystique-demo-golang:latest

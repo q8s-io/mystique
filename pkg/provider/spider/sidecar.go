@@ -2,8 +2,6 @@ package spider
 
 import (
 	"log"
-	"os/exec"
-	"strings"
 
 	"github.com/q8s-io/mystique/pkg/entity/model"
 	"github.com/q8s-io/mystique/pkg/infrastructure/kafka"
@@ -11,16 +9,14 @@ import (
 )
 
 var StdinQueue chan []byte
-var StdoutQueue chan []byte
-var StderrQueue chan []byte
+var StdoutQueue chan model.StdoutData
 
 func Run() {
 	InputConfig := model.Config.Input
 	OutputConfig := model.Config.Output
 
 	StdinQueue = make(chan []byte, 0)
-	StdoutQueue = make(chan []byte, 0)
-	StderrQueue = make(chan []byte, 0)
+	StdoutQueue = make(chan model.StdoutData, 1000)
 
 	if InputConfig.Enable && OutputConfig.Enable {
 		InputAndOutput(InputConfig, OutputConfig)
@@ -35,55 +31,52 @@ func Run() {
 
 func InputAndOutput(inputConfig model.Input, outputConfig model.Output) {
 	pid := GetPid(model.Config.App.ProcessorsName)
-	log.Println(pid)
-
-	go SinkToQueueFromStdout(pid)
-
-	kafka.InitSyncProducer(outputConfig.Kafka.Broker)
-	go func() {
-		for msg := range StdoutQueue {
-			repository.ProducerMsg(inputConfig.Kafka.Topic, msg)
-		}
-	}()
-
-	go SinkToStdinFromQueue(pid)
-
-	kafka.InitConsumer(inputConfig.Kafka.Broker, inputConfig.Kafka.ConsumerGroup)
-	repository.ConsumerMsg(inputConfig.Kafka.Topic)
-
-	for msg := range kafka.Queue {
-		StdinQueue <- msg
-	}
+	runStdout(pid, outputConfig)
+	runStdin(pid, inputConfig)
 }
 
 func InputOnly(inputConfig model.Input) {
-
+	pid := GetPid(model.Config.App.ProcessorsName)
+	runStdin(pid, inputConfig)
 }
 
 func OutputOnly(outputConfig model.Output) {
-
+	pid := GetPid(model.Config.App.ProcessorsName)
+	runStdout(pid, outputConfig)
 }
 
 func SelfOnly() {
 
 }
 
-func runInLinux(cmd string) (string, error) {
-	result, err := exec.Command("/bin/sh", "-c", cmd).Output()
-	if err != nil {
-		return "", err
-	} else {
-		return strings.TrimSpace(string(result)), err
+func runStdin(pid string, inputConfig model.Input) {
+	kafka.InitConsumer(inputConfig.Kafka.Broker, inputConfig.Kafka.ConsumerGroup)
+
+	go SinkToStdinFromQueue(pid)
+
+	go repository.ConsumerMsg(inputConfig.Kafka.Topic)
+
+	for msg := range kafka.Queue {
+		StdinQueue <- msg
 	}
 }
 
-func GetPid(serverName string) string {
-	a := `ps -x | grep "` + serverName + `" | head -1 | awk '{print $1}'`
-	pid, err := runInLinux(a)
-	if err != nil {
-		log.Println(err)
-		return ""
-	} else {
-		return pid
-	}
+func runStdout(pid string, outputConfig model.Output) {
+	kafka.InitSyncProducer(outputConfig.Kafka.Broker)
+
+	go SinkToQueueFromStdout(pid)
+	go SinkToQueueFromStderr(pid)
+
+	go func() {
+		for msg := range StdoutQueue {
+			switch msg.Type {
+			case model.ConfigTypeKafka:
+				repository.ProducerMsg(msg.Config, msg.Data)
+			case model.ConfigTypeQbus:
+				repository.ProducerMsg(msg.Config, msg.Data)
+			default:
+				log.Println(msg)
+			}
+		}
+	}()
 }

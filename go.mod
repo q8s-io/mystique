@@ -3,7 +3,6 @@ module github.com/q8s-io/mystique
 go 1.14
 
 require (
-	github.com/BurntSushi/toml v0.3.1
 	github.com/Microsoft/go-winio v0.4.15-0.20190919025122-fc70bd9a86b5 // indirect
 	github.com/Shopify/sarama v1.26.4
 	github.com/docker/distribution v2.7.1+incompatible // indirect

@@ -22,7 +22,6 @@ func Init(confPath string) {
 		log.Println(err)
 		return
 	}
-	log.Println(model.Config)
 
 	// init log
 	qlog.InitLog()
