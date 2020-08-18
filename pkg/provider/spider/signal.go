@@ -5,7 +5,9 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
+	"github.com/q8s-io/mystique/pkg/entity/model"
 	"github.com/q8s-io/mystique/pkg/infrastructure/kafka"
 )
 
@@ -16,10 +18,20 @@ func Signal() {
 	case <-sigterm:
 		log.Println("signal cancelled")
 
-		// 处理业务逻辑
-		close(kafka.Queue)
+		if model.Config.Input.Enable {
+			// 处理业务逻辑
+			close(kafka.Queue)
+			// wait for kafka comsumer commit
+			time.Sleep(1 * time.Second)
 
-		// time.Sleep(1 * time.Second)
+			close(StdinQueue)
+		}
+
+		if model.Config.Output.Enable {
+			close(StdoutNativeDataQueue)
+			close(StdoutQueue)
+		}
+
 		log.Println("server stop")
 		os.Exit(0)
 	}

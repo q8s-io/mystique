@@ -7,6 +7,10 @@ const (
 	ConfigTypeScribe string = "scribe"
 )
 
+type StdoutNativeData struct {
+	Data string
+}
+
 type StdoutData struct {
 	Type   string
 	Config string

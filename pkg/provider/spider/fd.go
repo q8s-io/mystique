@@ -3,7 +3,6 @@ package spider
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 )
 
@@ -17,11 +16,10 @@ func SinkToStdinFromQueue(pid string) {
 
 	for msg := range StdinQueue {
 		d := fmt.Sprintf("%s\n", string(msg))
-		n, writeErr := f.Write([]byte(d))
+		_, writeErr := f.Write([]byte(d))
 		if writeErr != nil {
 			fmt.Println(writeErr)
 		}
-		log.Printf("write data %d byte to fd succeed.", n)
 		_ = f.Sync()
 	}
 

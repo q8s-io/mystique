@@ -9,14 +9,12 @@ import (
 )
 
 var StdinQueue chan []byte
+var StdoutNativeDataQueue chan model.StdoutNativeData
 var StdoutQueue chan model.StdoutData
 
 func Run() {
 	InputConfig := model.Config.Input
 	OutputConfig := model.Config.Output
-
-	StdinQueue = make(chan []byte, 0)
-	StdoutQueue = make(chan model.StdoutData, 1000)
 
 	if InputConfig.Enable && OutputConfig.Enable {
 		InputAndOutput(InputConfig, OutputConfig)
@@ -50,6 +48,8 @@ func SelfOnly() {
 }
 
 func runStdin(pid string, inputConfig model.Input) {
+	StdinQueue = make(chan []byte, 1)
+
 	kafka.InitConsumer(inputConfig.Kafka.Broker, inputConfig.Kafka.ConsumerGroup)
 
 	go SinkToStdinFromQueue(pid)
@@ -62,8 +62,12 @@ func runStdin(pid string, inputConfig model.Input) {
 }
 
 func runStdout(pid string, outputConfig model.Output) {
+	StdoutNativeDataQueue = make(chan model.StdoutNativeData, 10000)
+	StdoutQueue = make(chan model.StdoutData, 1000)
+
 	kafka.InitSyncProducer(outputConfig.Kafka.Broker)
 
+	go processNativeLine()
 	go SinkToQueueFromStdout(pid)
 	go SinkToQueueFromStderr(pid)
 

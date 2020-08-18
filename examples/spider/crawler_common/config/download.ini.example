@@ -1,0 +1,85 @@
+[crawler]
+load_max_count = 200000					#高优先级下载url的最大装入数量
+sleep_ip_count = 200000					#睡眠(等待)ip队列的长度
+dns_url_count = 200000					#等待dns解析的域名队列长度
+download_thread_count = 500				#下载线程的个数
+download_dns_parse_count = 300          #下载线程需要做DNS解析时，最大的并发个数
+boundip_thread_count = 50				#绑定线程的个数
+log_file = ../config/log.ini     	#log配置文件
+url_wait_table_name = ../data/url_wait_table.dat        #待绑定url的内存表名
+domain_wait_table_name = ../data/domain_wait_table.dat  #待解析域名的内存表名
+dns_parse_again_time = 86400			#超过该设置时间，域名重新解析
+download_count_max = 10000000
+data_catogory = spider-ext1
+log_catogory = spider-ext1-log
+
+[domain_id]						#domain2id和id2domain两张内存表的配置参数
+lock_size = 60003					#锁的个数
+hash_size = 600000					#哈希桶的大小
+domain2id_name = ../data/domain2id.dat			#domain2id的内存表名
+id2domain_name = ../data/id2domain.dat			#id2domain的内存表名
+
+[ip2domain_table]					#ip2domain内存表的配置
+lock_size = 30003						#锁的个数
+hash_size = 300000					#哈希桶的大小
+block_size = 10						#内存块的大小（变长表）
+ip2domain_name = ../data/ip2domain.dat			#表名
+
+[domain2ip_table]					#domain2ip内存表的配置
+lock_size = 60003					#锁的个数
+hash_size = 600000					#哈希桶的大小
+block_size = 30						#内存块的大小（变长表）
+domain2ip_name = ../data/damain2ip.dat			#表名	
+
+[database]                              		#内存数据库相关配置
+shm_key = 31111						#共享内存键值
+lock_key = 311						#锁键值
+max_shm = 2000000000					#可以使用的最大共享内存大小（单位为byte）
+
+[wait_ip_url]						#hash+链表存储结构的配置
+lock_size = 30003					#锁的个数
+hash_size = 300000					#哈希桶的大小
+max_count = 10000						#url数目达到该数目时，不再插入
+display_count = 30					#当内存中剩余的域名小于该值时，显示域名明细
+display_connect_count = 20			#当某个ip的并发链接大于该值时，显示域名和连接数
+connect_line = 12;1:1;2:1;10:1;100:1;1000:1;2000:1;3000:1;4000:1;5000:1;20000:1;50000:1;80000:1;  #内存中某个域名下的url个数对应的连接数的折线函数
+
+[bound_ip]						#绑定线程配置参数
+wait_time = 3						#一个IP在下载完成后，要睡眠该秒数以后，在进行url的绑定。
+
+[idmanager]						#域名id管理模块配置
+id_file = ../data/id.dat				#域名id管理文件文件名
+
+[download]						#下载模块配置参数
+max_redirect_count = 5					#所处理的重定向的最大次数
+download_timeout = 3600					#下载超时时间
+connect_timeout = 60					#连接超时时间
+download_time_display = 15				#当下载时间超过该秒数时，打印url信息
+meta_jump_max_second = 10				#当需要睡眠的时间超过该值时，不再下载meta跳转
+ignore_meta_jump_size = 4000				#当下载的页面长度超过该值时,不再下载meta跳转
+ignore_frame_size = 4000				#html的长度超过该值，忽略frame
+download_max_length = 10485760				#下载最大长度, 超过此值后截断 注意不支持表达式  不能写1024*1024 !!!!
+download_res_flag = 1
+download_interface = 
+user_agent = User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.8.0.11) Firefox/1.5.0.11; 
+host_down_url = http://182.118.31.213:8080/downloader.php?url=
+spider_name = 360Spider
+
+[load_file]					#数据装载配置参数
+once_count = 300				#当处理的域名数达到该值时，把域名放到域名解析队列
+once_time = 60					#当处理的时间达到该值时，把域名放到域名解析队列
+sleep_time = 3					#在没有数据处理时的睡眠时间
+
+[clean_thread]						#清理线程配置参数
+clean_time = 1						#多长时间清理一次，以小时为单位 !!!
+error_clean_time = 48					#待绑定的domain-url list里, 如果某个url的等待时间超过该数值，则清除整个domain记录! Note: 目前是取domain里最老的节点  以小时为单位!
+parse_clean_time = 3
+
+[res_buf_table]                                         #js, css缓存配置参数
+res_buf_table_name = ../data/res_buffer.dat             #表名
+lock_size = 60003                                      #锁的个数
+hash_size = 600000                                      #哈希桶的大小
+block_size = 128                                        #内存块的大小（变长表）
+res_buf_max_block = 800                                 #最大块数
+res_buf_max_count = 2000000                              #最大条数
+res_clean_time = 28800					#清理该秒数以前的缓存

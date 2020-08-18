@@ -32,7 +32,7 @@ func InitConsumer(brokerList []string, groupID string) {
 		xray.ErrMini(clientErr)
 	}
 
-	Queue = make(chan []byte, 0)
+	Queue = make(chan []byte, 1)
 }
 
 func ConsumerMsg(topic string) {
