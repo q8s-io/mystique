@@ -1,9 +1,9 @@
 app:
   type: "spider"
-  processors_name: "/opt/app"
+  processors_name: "crawler_common"
 
 input:
-  enable: true
+  enable: false
   kafka:
     broker: ["117.50.109.103:9092"]
     topic: "spider-stdin"

@@ -23,4 +23,4 @@ COPY ./configs/ ./configs/
 RUN chmod +x /opt/mystique
 
 ENTRYPOINT ["/opt/mystique"]
-CMD ["-conf", "/opt/configs/pro.toml"]
+CMD ["-conf", "/opt/configs/pro.yaml"]

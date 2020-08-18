@@ -74,6 +74,8 @@ func runStdout(pid string, outputConfig model.Output) {
 				repository.ProducerMsg(msg.Config, msg.Data)
 			case model.ConfigTypeQbus:
 				repository.ProducerMsg(msg.Config, msg.Data)
+			case model.ConfigTypeScribe:
+				repository.ProducerMsg(msg.Config, msg.Data)
 			default:
 				log.Println(msg)
 			}

@@ -1,9 +1,10 @@
 package model
 
 const (
-	OutputTypeKafka string = "output"
-	ConfigTypeKafka string = "kafka"
-	ConfigTypeQbus  string = "qbus"
+	OutputTypeData   string = "output"
+	ConfigTypeKafka  string = "kafka"
+	ConfigTypeQbus   string = "qbus"
+	ConfigTypeScribe string = "scribe"
 )
 
 type StdoutData struct {

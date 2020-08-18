@@ -12,7 +12,8 @@ func processOutputLine(line string) {
 	outputData := strings.Split(line, "\t")
 	var stdoutData model.StdoutData
 	// data
-	if outputData[0] == model.OutputTypeKafka {
+	if len(outputData) > 3 && outputData[0] == model.OutputTypeData {
+		log.Println(outputData)
 		outputType := outputData[1]
 		outputConfig := outputData[2]
 		tempStr := fmt.Sprintf("output\t%s\t%s\t", outputType, outputConfig)
